@@ -4,21 +4,26 @@ import { ColorGUIHelper } from '../jsHelper/ColorGUIHelper.js';
 import { MinMaxGUIHelper } from '../jsHelper/MinMaxGUIHelper.js';
 import { makeAxisGrid } from '../utils.js';
 
+
 export class SceneGUI {
-    constructor(scene, camera, balls, ambientLight, directionalLight) {
+    constructor(scene, camera, balls, ambientLight, pointLight) {
       this.scene = scene;
       this.camera = camera;
       this.gui = gui;
       this.balls = balls;
       this.ambientLight = ambientLight;
-      this.directionalLight = directionalLight;
-  
+      this.pointLight = pointLight;
+      
       this.initSceneFolder();
       this.initCameraFolder();
-      this.initBallsFolder();
+      if (this.balls != null){
+        this.initBallsFolder();
+      }
       this.initAmbientLight();
-      this.initDirectionalLight();
+      this.initpointLight();
     }
+    
+
   
     initSceneFolder() {
       const folder = this.gui.addFolder('scene');
@@ -41,6 +46,7 @@ export class SceneGUI {
       const folder = this.gui.addFolder('balls');
       for (let i = 0; i < 16; i++) {
         const ball = this.balls[i];
+        console.log(ball);
         makeAxisGrid(ball.mesh, ball.name, 25, folder);
       }
     }
@@ -51,19 +57,28 @@ export class SceneGUI {
       folder.add(this.ambientLight, 'intensity', 0, 2, 0.01);
     }
   
-    initDirectionalLight() {
+    initpointLight() {
 
-      this.helper = new THREE.DirectionalLightHelper(this.directionalLight);
+      this.helper = new THREE.PointLightHelper(this.pointLight);
       this.scene.add(this.helper);
+      this.cameraHelper = new THREE.CameraHelper(this.pointLight.shadow.camera);
+      this.scene.add(this.cameraHelper);
   
-      const folder = this.gui.addFolder('directional_light');
-      folder.addColor(new ColorGUIHelper(this.directionalLight, 'color'), 'value').name('directional_light_color');
-      folder.add(this.directionalLight, 'intensity', 0, 2, 0.01);
+      var folder = this.gui.addFolder('point_light');
+      folder.addColor(new ColorGUIHelper(this.pointLight, 'color'), 'value').name('point_light_color');
+      folder.add(this.pointLight, 'intensity', 0, 200, 1);
+      folder.add(this.pointLight, 'distance', 0, 40).onChange(() => this.updateLight());
       folder.add(this.helper, 'visible').name('helper_visible');
   
-      this.makeXYZGUI(folder, this.directionalLight.position, 'position_light_directional', () => this.updateLight());
-      this.makeXYZGUI(folder, this.directionalLight.target.position, 'target_light_directional', () => this.updateLight());
+      this.makeXYZGUI(folder, this.pointLight.position, 'position_light_point', () => this.updateLight());
+      folder = this.gui.addFolder('Shadow Camera');
+      folder.add(this.cameraHelper, 'visible').name('camera_helper_visible');
+      const minMaxGUIHelper = new MinMaxGUIHelper(this.pointLight.shadow.camera, 'near', 'far', 0.1);
+      folder.add(minMaxGUIHelper, 'min', 0.1, 50, 0.1).name('near').onChange(() => this.updateLight());
+      folder.add(minMaxGUIHelper, 'max', 0.1, 50, 0.1).name('far').onChange(() => this.updateLight());
+      folder.add(this.pointLight.shadow.camera, 'zoom', 0.01, 1.5, 0.01).onChange(() => this.updateLight());
     }
+
   
     makeXYZGUI(folder, vector3, name, onChangeFn) {
       const xyzFolder = folder.addFolder(name);
@@ -74,7 +89,11 @@ export class SceneGUI {
     }
   
     updateLight() {
-      this.directionalLight.target.updateMatrixWorld();
       this.helper.update();
+      // update the light's shadow camera's projection matrix
+      this.pointLight.shadow.camera.updateProjectionMatrix();
+      // and now update the camera helper we're using to show the light's shadow camera
+      this.cameraHelper.update();
+
     }
   }

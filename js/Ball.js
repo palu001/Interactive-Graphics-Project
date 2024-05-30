@@ -1,20 +1,22 @@
 import * as THREE from 'three';
+import {BALL_RADIUS} from './utils.js';
 
 export class Ball {
-  constructor(scene, texturePath, i,  radius = 1, widthSegments = 32, heightSegments = 32) {
-    this.scene = scene;
-    this.textureLoader = new THREE.TextureLoader();
-    this.texture = this.textureLoader.load(texturePath);
-    this.geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
-    this.material = new THREE.MeshStandardMaterial({
+  constructor(scene, texturePath, i) {
+    
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load(texturePath);
+    const geometry = new THREE.SphereGeometry(BALL_RADIUS, 32, 32);
+    const material = new THREE.MeshStandardMaterial({
       map: this.texture,
       roughness: 1.0,
     });
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.mesh);
+    this.mesh = new THREE.Mesh(geometry, material);
+    scene.add(this.mesh);
     this.name = 'ball' + i;
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
+    this.mesh.position.set(0, 1.1, 0); // Raised to match the table height
   }
 
   setPosition(x, y, z) {

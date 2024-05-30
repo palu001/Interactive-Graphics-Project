@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { Ball } from '../js/Ball.js';
 import {SceneGUI} from '../js/jsHelper/SceneGUI.js';
-
+import {Table} from '../js/Table.js';
+import {Room} from '../js/Room.js';
+import {Lamp} from '../js/Lamp.js';
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('black');
@@ -23,7 +25,7 @@ camera.position.z = 15;
 
 
 const controls = new OrbitControls(camera, canvas);
-controls.target.set(0, 5, 0);
+/* controls.target.set(0, 5, 0); */
 controls.update();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
@@ -36,6 +38,7 @@ const textureFolder = 'textures/balls/';
 
 
 
+/* Da modificare col tavolo 
 for (let i = 0; i < 16; i++) {
   var texturePath=textureFolder + i + 'ball.png';
   if (i==0){
@@ -49,7 +52,7 @@ for (let i = 0; i < 16; i++) {
     (Math.random() - 0.5) * 10
   );
   balls.push(ball);
-}
+}*/
 
 
 const color = 0xFFFFFF;
@@ -60,19 +63,22 @@ scene.add(ambient_light);
 
 
 
-const light_directional = new THREE.DirectionalLight(color, intensity);
-light_directional.castShadow = true;
-light_directional.position.set(0, 10, 0);
-light_directional.target.position.set(-5, 0, 0);
-scene.add(light_directional);
-scene.add(light_directional.target);
 
 
-const sceneGUI = new SceneGUI(scene, camera, balls, ambient_light, light_directional);
+
+
+const table = new Table(scene);
+const ball = new Ball(scene, textureFolder + 'whiteball.png', 0);
+const room = new Room(scene);
+const lamp = new Lamp(scene);
+
+const sceneGUI = new SceneGUI(scene, camera, null, ambient_light, lamp.pointLight);
 
 function animate() {
-  requestAnimationFrame(animate);
+  
+
   renderer.render(scene, camera);
+  requestAnimationFrame(animate);
 }
 
 animate();
