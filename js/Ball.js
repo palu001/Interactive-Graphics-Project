@@ -8,7 +8,7 @@ export class Ball {
     const texture = textureLoader.load(texturePath);
     const geometry = new THREE.SphereGeometry(BALL_RADIUS, 32, 32);
     const material = new THREE.MeshStandardMaterial({
-      map: this.texture,
+      map: texture,
       roughness: 1.0,
     });
     this.mesh = new THREE.Mesh(geometry, material);

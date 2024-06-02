@@ -5,6 +5,8 @@ import {SceneGUI} from '../js/jsHelper/SceneGUI.js';
 import {Table} from '../js/Table.js';
 import {Room} from '../js/Room.js';
 import {Lamp} from '../js/Lamp.js';
+import {addBallsToScene} from '../js/utils.js';
+import {updatePhysics} from '../js/Physics.js';
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('black');
@@ -38,21 +40,7 @@ const textureFolder = 'textures/balls/';
 
 
 
-/* Da modificare col tavolo 
-for (let i = 0; i < 16; i++) {
-  var texturePath=textureFolder + i + 'ball.png';
-  if (i==0){
-    texturePath=textureFolder + 'whiteball.png';
-  }
-  console.log(texturePath);
-  const ball = new Ball(scene, texturePath, i);
-  ball.setPosition(
-    (Math.random() - 0.5) * 10,
-    (Math.random() - 0.5) * 10,
-    (Math.random() - 0.5) * 10
-  );
-  balls.push(ball);
-}*/
+
 
 
 const color = 0xFFFFFF;
@@ -60,28 +48,25 @@ const intensity = 2;
 const ambient_light = new THREE.AmbientLight(color, intensity);
 scene.add(ambient_light);
 
-
-
-
-
-
-
-
 const table = new Table(scene);
-const ball = new Ball(scene, textureFolder + 'whiteball.png', 0);
 const room = new Room(scene);
 const lamp = new Lamp(scene);
 
-const sceneGUI = new SceneGUI(scene, camera, null, ambient_light, lamp.pointLight);
 
-function animate() {
-  
+
+addBallsToScene(scene, textureFolder, balls);
+const sceneGUI = new SceneGUI(scene, camera, balls, ambient_light, lamp.pointLight);
+let lastTime = 0;
+function animate(time) {
+  const deltaTime = (time - lastTime) / 1000; // Convert time to seconds
+  lastTime = time;
+  updatePhysics(deltaTime, scene, balls);
 
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }
 
-animate();
+animate(0);
 
 window.addEventListener('resize', () => {
   camera.aspect = canvas.clientWidth / canvas.clientHeight;

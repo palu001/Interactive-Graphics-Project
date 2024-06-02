@@ -36,6 +36,12 @@ export class Table {
       const pocket = new THREE.Mesh(pocketGeometry, pocketMaterial);
       pocket.castShadow = true;
       pocket.receiveShadow = true;
+      if (!isSidePocket && (index == 0 || index == 3)){
+        pocket.rotation.z = Math.PI / 4;
+      }
+      else if (!isSidePocket && (index == 1 || index == 2)){
+        pocket.rotation.z = -Math.PI / 4;
+      }
       pocket.rotation.x = Math.PI / 2;
       pocket.position.set(position[0], position[1], position[2]);
       scene.add(pocket);

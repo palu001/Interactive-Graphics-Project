@@ -10,15 +10,15 @@ export class AxisGridHelper {
     constructor(node, units = 10) {
       const axes = new THREE.AxesHelper();
       axes.material.depthTest = false;
-      axes.renderOrder = 2;  // after the grid
+      axes.renderOrder = 1;  // after the grid
       node.add(axes);
    
-      const grid = new THREE.GridHelper(units, units);
+      /*const grid = new THREE.GridHelper(units, units);
       grid.material.depthTest = false;
       grid.renderOrder = 1;
       node.add(grid);
    
-      this.grid = grid;
+      this.grid = grid;*/
       this.axes = axes;
       this.visible = false;
     }
@@ -27,7 +27,7 @@ export class AxisGridHelper {
     }
     set visible(v) {
       this._visible = v;
-      this.grid.visible = v;
+      //this.grid.visible = v;
       this.axes.visible = v;
     }
   }

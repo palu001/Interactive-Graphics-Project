@@ -1,5 +1,7 @@
 import { AxisGridHelper } from '../js/jsHelper/AxisGridHelper.js';
 import * as THREE from 'three';
+import { Ball } from './Ball.js';
+
 
 //GUI for Helper
 import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
@@ -17,19 +19,19 @@ const TABLE_WIDTH = 5;
 export { TABLE_WIDTH };
 const TABLE_HEIGHT = 0.1;
 export { TABLE_HEIGHT };
-const TABLE_LENGTH = 10;
+const TABLE_LENGTH = 8;
 export { TABLE_LENGTH };
 const BALL_RADIUS = 0.05;
 export { BALL_RADIUS };
-const CORNER_POCKET_RADIUS = 0.1;
+const CORNER_POCKET_RADIUS = 0.16;
 export { CORNER_POCKET_RADIUS };
-const SIDE_POCKET_RADIUS = 0.098;
+const SIDE_POCKET_RADIUS = 0.15;
 export { SIDE_POCKET_RADIUS };
 const BORDER_WIDTH = 0.127;
 export { BORDER_WIDTH };
 const BORDER_HEIGHT = 0.3;
 export { BORDER_HEIGHT };
-const BORDER_LENGTH = 10.26;
+const BORDER_LENGTH = TABLE_LENGTH + .26;
 export { BORDER_LENGTH };
 const SHORT_BORDER_WIDTH = 5.26;
 export { SHORT_BORDER_WIDTH };
@@ -50,3 +52,46 @@ export { ROOM_SIZE };
 const CEILINGHEIGHT = 10;
 export { CEILINGHEIGHT };
 
+
+//Functions used in order to create balls and insert them into the scene
+
+function createBall(i, scene, textureFolder) {
+  const texturePath = i === 0 ? `${textureFolder}whiteball.png` : `${textureFolder}${i}ball.png`;
+  console.log('Texture path:', texturePath);
+  return new Ball(scene, texturePath, i);
+}
+
+function waitForMeshCreation(ball) {
+  return new Promise((resolve) => {
+    function checkMesh() {
+      if (ball.mesh && ball.velocity && ball.angularVelocity) {
+        resolve(ball);
+      } else {
+        requestAnimationFrame(checkMesh);
+      }
+    }
+    checkMesh();
+  });
+}
+
+function initializeBall(ball, scene) {
+  ball.setPosition((Math.random() - 0.5) * TABLE_WIDTH, 1.1, (Math.random() - 0.5) * TABLE_LENGTH);
+  ball.velocity = new THREE.Vector3((Math.random() - 0.5), 0, (Math.random() - 0.5));
+  ball.angularVelocity = new THREE.Vector3();
+}
+
+async function addBall(i, scene, textureFolder, balls) {
+  const ball = createBall(i, scene, textureFolder);
+  initializeBall(ball, scene);
+  balls.push(ball);
+  await waitForMeshCreation(ball);
+}
+
+export async function addBallsToScene(scene, textureFolder, balls) {
+  const ballPromises = [];
+  for (let i = 0; i < 16; i++) {
+    ballPromises.push(addBall(i, scene, textureFolder, balls));
+  }
+  await Promise.all(ballPromises);
+  console.log('All balls added to the scene:', balls);
+}
