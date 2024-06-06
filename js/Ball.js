@@ -16,9 +16,7 @@ export class Ball {
     this.name = 'ball' + i;
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
-    this.mesh.position.set(0, 1.1, 0); // Raised to match the table height
   }
-
   setPosition(x, y, z) {
     this.mesh.position.set(x, y, z);
   }

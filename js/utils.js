@@ -21,7 +21,7 @@ const TABLE_HEIGHT = 0.1;
 export { TABLE_HEIGHT };
 const TABLE_LENGTH = 8;
 export { TABLE_LENGTH };
-const BALL_RADIUS = 0.05;
+const BALL_RADIUS = 0.07;
 export { BALL_RADIUS };
 const CORNER_POCKET_RADIUS = 0.16;
 export { CORNER_POCKET_RADIUS };
@@ -51,13 +51,20 @@ const ROOM_SIZE = 100;
 export { ROOM_SIZE };
 const CEILINGHEIGHT = 10;
 export { CEILINGHEIGHT };
+const FRICTION = 1.01;
+export { FRICTION };
+const LIMIT_VELOCITY = 0.01;
+export { LIMIT_VELOCITY };
+const POCKET_COLLISION = 1.15;
+export { POCKET_COLLISION };
+const SCALAR_VELOCITY = 3;
+export { SCALAR_VELOCITY };
 
 
 //Functions used in order to create balls and insert them into the scene
 
 function createBall(i, scene, textureFolder) {
   const texturePath = i === 0 ? `${textureFolder}whiteball.png` : `${textureFolder}${i}ball.png`;
-  console.log('Texture path:', texturePath);
   return new Ball(scene, texturePath, i);
 }
 
@@ -75,8 +82,9 @@ function waitForMeshCreation(ball) {
 }
 
 function initializeBall(ball, scene) {
-  ball.setPosition((Math.random() - 0.5) * TABLE_WIDTH, 1.1, (Math.random() - 0.5) * TABLE_LENGTH);
-  ball.velocity = new THREE.Vector3((Math.random() - 0.5), 0, (Math.random() - 0.5));
+  ball.setPosition((Math.random() - 0.5) * TABLE_WIDTH, 1.12, (Math.random() - 0.5) * TABLE_LENGTH);
+  //ball.velocity = new THREE.Vector3((Math.random() - 0.5), 0, (Math.random() - 0.5));
+  ball.velocity = new THREE.Vector3(0, 0, 0);
   ball.angularVelocity = new THREE.Vector3();
 }
 

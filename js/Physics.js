@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import { BALL_RADIUS, TABLE_WIDTH, TABLE_LENGTH, SIDE_POCKET_RADIUS, CORNER_POCKET_RADIUS } from './utils.js';
+import { BALL_RADIUS, TABLE_WIDTH, TABLE_LENGTH, SIDE_POCKET_RADIUS, CORNER_POCKET_RADIUS, FRICTION, LIMIT_VELOCITY, 
+  POCKET_COLLISION
+ } from './utils.js';
 
 function detectCollisions(scene, balls) {
   // Collisioni Palla-Palla
@@ -43,7 +45,7 @@ function detectCollisions(scene, balls) {
       const pocketRadius = (position[2] === 0) ? SIDE_POCKET_RADIUS : CORNER_POCKET_RADIUS;
       const pocketPosition = new THREE.Vector3(position[0], position[1], position[2]);
       const distance = ball.mesh.position.distanceTo(pocketPosition);
-      if (distance < pocketRadius) {
+      if (distance < pocketRadius * POCKET_COLLISION) {
         scene.remove(ball.mesh);
         balls.splice(index, 1);
       }
@@ -53,7 +55,11 @@ function detectCollisions(scene, balls) {
 
 export function updatePhysics(deltaTime, scene, balls) {
   balls.forEach(ball => {
-    if (ball.mesh) {  // Ensure velocity is defined
+    if (ball.mesh) { 
+      ball.velocity = ball.velocity.divideScalar(FRICTION); // Friction
+      if (ball.velocity.length() < LIMIT_VELOCITY){
+        ball.velocity.set(0, 0, 0);
+      }
       const distance = ball.velocity.clone().multiplyScalar(deltaTime);
       ball.mesh.position.add(distance);
 
@@ -66,7 +72,6 @@ export function updatePhysics(deltaTime, scene, balls) {
       console.error("Ball velocity is undefined", ball);
     }
   });
-  
   detectCollisions(scene, balls);
 }
 

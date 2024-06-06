@@ -12,11 +12,11 @@ export class Table {
     // billiard table (only playfield)
     const tableGeometry = new THREE.BoxGeometry(TABLE_WIDTH, TABLE_HEIGHT, TABLE_LENGTH);
     const tableMaterial = new THREE.MeshPhongMaterial({ color: 'green' });
-    const table = new THREE.Mesh(tableGeometry, tableMaterial);
-    table.position.y = 1.0; // for legs
-    scene.add(table);
-    table.castShadow = true;
-    table.receiveShadow = true;
+    this.table = new THREE.Mesh(tableGeometry, tableMaterial);
+    this.table.position.y = 1.0; // for legs
+    scene.add(this.table);
+    this.table.castShadow = true;
+    this.table.receiveShadow = true;
 
     // pockets for balls
     const cornerPocketGeometry = new THREE.CylinderGeometry(CORNER_POCKET_RADIUS, CORNER_POCKET_RADIUS, 0.1, 32);
