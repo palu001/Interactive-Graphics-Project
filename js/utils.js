@@ -82,7 +82,7 @@ function waitForMeshCreation(ball) {
 }
 
 function initializeBall(ball, scene) {
-  ball.setPosition((Math.random() - 0.5) * TABLE_WIDTH, 1.12, (Math.random() - 0.5) * TABLE_LENGTH);
+  //ball.setPosition((Math.random() - 0.5) * TABLE_WIDTH, 1.12, (Math.random() - 0.5) * TABLE_LENGTH);
   //ball.velocity = new THREE.Vector3((Math.random() - 0.5), 0, (Math.random() - 0.5));
   ball.velocity = new THREE.Vector3(0, 0, 0);
   ball.angularVelocity = new THREE.Vector3();
@@ -101,5 +101,44 @@ export async function addBallsToScene(scene, textureFolder, balls) {
     ballPromises.push(addBall(i, scene, textureFolder, balls));
   }
   await Promise.all(ballPromises);
+
+  // Arrange the balls in a triangle formation
+  arrangeBallsInTriangle(balls);
+
+  // Position the cue ball in front of the triangle
+  balls[0].setPosition(0, 1.12, 1.5);
+
   console.log('All balls added to the scene:', balls);
 }
+
+
+export function checkVelocities(balls){
+  let allBallsStopped = true;
+  for (let i = 0; i < balls.length; i++) {
+    console.log("ball ", i, balls[i].velocity.length());
+    if (balls[i].velocity.length() > LIMIT_VELOCITY) {
+      allBallsStopped = false;
+      break;
+    }
+  }
+  return allBallsStopped;
+}
+
+function arrangeBallsInTriangle(balls) {
+  const startX = 0; // X coordinate for the first ball
+  const startZ = -1.5; // Z coordinate for the first ball, adjust as needed
+  const rowSpacing = BALL_RADIUS * 2;
+  const colSpacing = BALL_RADIUS * 2;
+
+  let ballIndex = 1; // Start from 1 because 0 is the cue ball
+
+  for (let row = 0; row < 5; row++) { // 5 rows in a standard 15-ball triangle
+    for (let col = 0; col <= row; col++) {
+      const x = startX + colSpacing * (col - row / 2);
+      const z = startZ - rowSpacing * row;
+      balls[ballIndex].setPosition(x, 1.12, z);
+      ballIndex++;
+    }
+  }
+}
+

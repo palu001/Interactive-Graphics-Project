@@ -3,7 +3,7 @@ import { BALL_RADIUS, TABLE_WIDTH, TABLE_LENGTH, SIDE_POCKET_RADIUS, CORNER_POCK
   POCKET_COLLISION
  } from './utils.js';
 
-function detectCollisions(scene, balls) {
+function detectCollisions(scene, balls, game) {
   // Collisioni Palla-Palla
   for (let i = 0; i < balls.length; i++) {
     for (let j = i + 1; j < balls.length; j++) {
@@ -46,14 +46,49 @@ function detectCollisions(scene, balls) {
       const pocketPosition = new THREE.Vector3(position[0], position[1], position[2]);
       const distance = ball.mesh.position.distanceTo(pocketPosition);
       if (distance < pocketRadius * POCKET_COLLISION) {
-        scene.remove(ball.mesh);
-        balls.splice(index, 1);
+        if (ball.type != 'cue') {
+          scene.remove(ball.mesh);
+          balls.splice(index, 1);
+          game.addScore(ball.type);
+        }
+        else{
+          const newPosition = findFreePositionNear(ball.lastPosition, balls);
+          ball.setPosition(newPosition.x, newPosition.y, newPosition.z);
+          ball.velocity.set(0, 0, 0);
+          ball.angularVelocity.set(0, 0, 0);
+        }
       }
     });
   });
 }
 
-export function updatePhysics(deltaTime, scene, balls) {
+function findFreePositionNear(position, balls) {
+  // Define a small offset to try nearby positions
+  const offset = BALL_RADIUS * 3;
+  const attempts = [
+    new THREE.Vector3(position.x, position.y, position.z),
+    new THREE.Vector3(position.x + offset, position.y, position.z),
+    new THREE.Vector3(position.x - offset, position.y, position.z),
+    new THREE.Vector3(position.x, position.y, position.z + offset),
+    new THREE.Vector3(position.x, position.y, position.z - offset),
+  ];
+
+  for (const attempt of attempts) {
+    let collision = false;
+    for (const ball of balls) {
+      if (ball.type!='cue' && attempt.distanceTo(ball.mesh.position) < offset) {
+        collision = true;
+        break;
+      }
+    }
+    if (!collision) {
+      return attempt;
+    }
+  }
+  return position; // Default to original position if no free spot is found
+}
+
+export function updatePhysics(deltaTime, scene, balls, game) {
   balls.forEach(ball => {
     if (ball.mesh) { 
       ball.velocity = ball.velocity.divideScalar(FRICTION); // Friction
@@ -72,6 +107,9 @@ export function updatePhysics(deltaTime, scene, balls) {
       console.error("Ball velocity is undefined", ball);
     }
   });
-  detectCollisions(scene, balls);
+  detectCollisions(scene, balls, game);
+
+  // Check if all balls have stopped to change the turn
+  game.checkForTurnChange(balls);
 }
 

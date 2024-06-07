@@ -1,14 +1,15 @@
 
 import * as THREE from 'three';
-import { SCALAR_VELOCITY } from './utils.js';
+import { SCALAR_VELOCITY, checkVelocities } from './utils.js';
 
 export class Arrow {
-  constructor(scene, camera, controls, balls, table) {
+  constructor(scene, camera, controls, balls, table, game) {
     this.scene = scene;
     this.camera = camera;
     this.controls = controls;
     this.balls = balls;
     this.table = table;
+    this.game = game;
     
     this.raycaster_click = new THREE.Raycaster();
     this.raycaster_arrow = new THREE.Raycaster();
@@ -35,7 +36,7 @@ export class Arrow {
     if (intersects.length > 0) {
       const mesh = intersects[0].object;
       console.log('Ball clicked!');
-      if (!this.arrowHelper && this.balls[0].velocity.length() === 0) {
+      if (!this.arrowHelper && checkVelocities(this.balls)) {
         this.arrowHelper = new THREE.ArrowHelper(
           new THREE.Vector3(1, 0, 0),
           mesh.position,
@@ -49,6 +50,9 @@ export class Arrow {
         this.arrowHelper = null;
         this.controls.enabled = true;
       }
+    }
+    else{
+      this.controls.enabled = true;
     }
   }
 
@@ -86,10 +90,16 @@ export class Arrow {
       const direction = this.arrowHelper.dir.clone(); // Clone to avoid modifying the original
       const length = this.arrowHelper.length * SCALAR_VELOCITY;
       console.log('Direction:', direction, 'Length:', length);
+
+      // Save the cue ball's position before the shot
+      this.balls[0].lastPosition = this.balls[0].mesh.position.clone();
+      
       this.balls[0].velocity = direction.multiplyScalar(length);
       this.scene.remove(this.arrowHelper);
       this.arrowHelper = null;
       this.controls.enabled = true;
+
+      this.game.setWaitingForNextTurn(); // Imposta lo stato di attesa del prossimo turno
     }
   }
 }

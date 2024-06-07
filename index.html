@@ -13,6 +13,16 @@
             height: 100%;
             display: block;
         }
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-family: Arial, sans-serif;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
     </style>
     <script type="importmap">
         {
@@ -25,6 +35,12 @@
     <script type="module" src="js/world.js"></script>
 </head>
 <body>
+    <div id="scoreboard">
+        <div id="player1Score">Player 1: 0</div>
+        <div id="player2Score">Player 2: 0</div>
+        <div id="currentPlayerTurn">Player 1's turn</div> 
+        <div id="targetBall">Target Ball: None</div>
+    </div>
     <canvas id="c"></canvas>
 </body>
 </html>

@@ -7,6 +7,7 @@ import { Lamp } from '../js/Lamp.js';
 import { addBallsToScene } from '../js/utils.js';
 import { updatePhysics } from '../js/Physics.js';
 import { Arrow } from '../js/Arrow.js';
+import { Game } from '../js/Game.js';
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('black');
@@ -42,14 +43,16 @@ const lamp = new Lamp(scene);
 
 addBallsToScene(scene, textureFolder, balls);
 const sceneGUI = new SceneGUI(scene, camera, balls, ambient_light, lamp.pointLight);
+const game = new Game();
+const arrow = new Arrow(scene, camera, controls, balls, table, game);
 
-const arrow = new Arrow(scene, camera, controls, balls, table);
+
 
 let lastTime = 0;
 function animate(time) {
   const deltaTime = (time - lastTime) / 1000; // Convert time to seconds
   lastTime = time;
-  updatePhysics(deltaTime, scene, balls);
+  updatePhysics(deltaTime, scene, balls, game);
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 }

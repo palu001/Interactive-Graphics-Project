@@ -16,6 +16,17 @@ export class Ball {
     this.name = 'ball' + i;
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
+
+    // Determine the type of ball
+    if (i === 0) {
+      this.type = 'cue'; // Cue ball
+    } else if (i === 8) {
+      this.type = '8'; // 8-ball
+    } else if (i >= 1 && i <= 7) {
+      this.type = 'solid'; // Solid balls
+    } else {
+      this.type = 'striped'; // Striped balls
+    }
   }
   setPosition(x, y, z) {
     this.mesh.position.set(x, y, z);
