@@ -34,7 +34,7 @@ export class Arrow {
     const intersects = this.raycaster_click.intersectObject(this.balls[0].mesh);
 
     if (intersects.length > 0) {
-      const mesh = intersects[0].object;
+      const mesh = this.balls[0].mesh;
       console.log('Ball clicked!');
       if (!this.arrowHelper && checkVelocities(this.balls)) {
         this.arrowHelper = new THREE.ArrowHelper(

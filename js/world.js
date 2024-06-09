@@ -28,26 +28,26 @@ controls.update();
 const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
+renderer.physicallyCorrectLights = true;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1;
+renderer.outputEncoding = THREE.sRGBEncoding;
 
 const balls = [];
 const textureFolder = 'textures/balls/';
 
-const color = 0xFFFFFF;
-const intensity = 2;
-const ambient_light = new THREE.AmbientLight(color, intensity);
-scene.add(ambient_light);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
 
 const table = new Table(scene);
 const room = new Room(scene);
 const lamp = new Lamp(scene);
 
 addBallsToScene(scene, textureFolder, balls);
-const sceneGUI = new SceneGUI(scene, camera, balls, ambient_light, lamp.pointLight);
+const sceneGUI = new SceneGUI(scene, camera, balls, ambientLight, lamp.pointLight);
 const game = new Game();
 const arrow = new Arrow(scene, camera, controls, balls, table, game);
-
-
-
 let lastTime = 0;
 function animate(time) {
   const deltaTime = (time - lastTime) / 1000; // Convert time to seconds

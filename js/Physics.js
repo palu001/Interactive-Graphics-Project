@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import { BALL_RADIUS, TABLE_WIDTH, TABLE_LENGTH, SIDE_POCKET_RADIUS, CORNER_POCKET_RADIUS, FRICTION, LIMIT_VELOCITY, 
-  POCKET_COLLISION
+import { BALL_RADIUS, TABLE_WIDTH, TABLE_LENGTH, SIDE_POCKET_RADIUS, CORNER_POCKET_RADIUS, FRICTION, LIMIT_VELOCITY
  } from './utils.js';
 
 function detectCollisions(scene, balls, game) {
@@ -35,17 +34,21 @@ function detectCollisions(scene, balls, game) {
 
   // Collisioni Palla-Buca
   balls.forEach((ball, index) => {
+    const pocketOffset = 0.15; 
     const pocketPositions = [
-      [-TABLE_WIDTH / 2, 1, -TABLE_LENGTH / 2], [TABLE_WIDTH / 2, 1, -TABLE_LENGTH / 2], // Angoli posteriori
-      [-TABLE_WIDTH / 2, 1, TABLE_LENGTH / 2], [TABLE_WIDTH / 2, 1, TABLE_LENGTH / 2],   // Angoli anteriori
-      [-TABLE_WIDTH / 2, 1, 0], [TABLE_WIDTH / 2, 1, 0],   // Lati
+        [-TABLE_WIDTH / 2 - 0 , 1.12, -TABLE_LENGTH / 2 - 0], 
+        [TABLE_WIDTH / 2 + 0, 1.12, -TABLE_LENGTH / 2 - 0],  // back corners
+        [-TABLE_WIDTH / 2 - 0, 1.12, TABLE_LENGTH / 2 + 0], 
+        [TABLE_WIDTH / 2 + 0, 1.12, TABLE_LENGTH / 2 + 0],   // front corners
+        [-TABLE_WIDTH / 2 - 0, 1.12, 0], 
+        [TABLE_WIDTH / 2 + 0, 1.12, 0],   // sides
     ];
 
     pocketPositions.forEach(position => {
       const pocketRadius = (position[2] === 0) ? SIDE_POCKET_RADIUS : CORNER_POCKET_RADIUS;
       const pocketPosition = new THREE.Vector3(position[0], position[1], position[2]);
       const distance = ball.mesh.position.distanceTo(pocketPosition);
-      if (distance < pocketRadius * POCKET_COLLISION) {
+      if (distance < pocketRadius/2) {
         if (ball.type != 'cue') {
           scene.remove(ball.mesh);
           balls.splice(index, 1);

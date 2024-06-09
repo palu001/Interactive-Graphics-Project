@@ -7,9 +7,13 @@ export class Ball {
     const textureLoader = new THREE.TextureLoader();
     const texture = textureLoader.load(texturePath);
     const geometry = new THREE.SphereGeometry(BALL_RADIUS, 32, 32);
-    const material = new THREE.MeshStandardMaterial({
+    const material = new THREE.MeshPhysicalMaterial({
       map: texture,
-      roughness: 1.0,
+      roughness: 0.0,
+      metalness: 0.8,
+      reflectivity: 1.0,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     scene.add(this.mesh);

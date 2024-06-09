@@ -2,69 +2,85 @@ import * as THREE from 'three';
 import { ROOM_SIZE, DISTANCE_FROM_FLOOR, CEILINGHEIGHT } from './utils.js';
 
 export class Room {
-    constructor(scene) {
-        const floor_material = new THREE.MeshPhongMaterial({ color: 'red' });
+  constructor(scene) {
+    const textureLoader = new THREE.TextureLoader();
+    
+    // Load textures
+    const floorTexture = textureLoader.load('textures/room/wood_texture.png');
+    const ceilingTexture = textureLoader.load('textures/room/wood_texture.png');
+    const wallTexture = textureLoader.load('textures/room/wood_texture.png');
 
-        const floor_geometry = new THREE.PlaneGeometry(ROOM_SIZE, ROOM_SIZE);
-        this.floor = new THREE.Mesh(floor_geometry, floor_material);
-        this.floor.rotation.x = -Math.PI / 2;
-        this.floor.position.y = DISTANCE_FROM_FLOOR;
-        scene.add(this.floor);
+    // Create materials with textures
+    const floorMaterial = new THREE.MeshPhysicalMaterial({ map: floorTexture, roughness: 0.5, metalness: 0.2 });
+    const ceilingMaterial = new THREE.MeshPhysicalMaterial({ map: ceilingTexture, roughness: 0.5, metalness: 0.2 });
+    const wallMaterial = new THREE.MeshPhysicalMaterial({ map: wallTexture, roughness: 0.5, metalness: 0.2 });
 
-        this.floor.castShadow = true;
-        this.floor.receiveShadow = true;
+   
+    floorTexture.wrapS = THREE.RepeatWrapping;
+    floorTexture.wrapT = THREE.RepeatWrapping;
+    floorTexture.repeat.set(2, 2); 
 
-        const ceiling_material = new THREE.MeshPhongMaterial({ color: 'blue' });
-        this.ceiling = new THREE.Mesh(floor_geometry, ceiling_material);
-        this.ceiling.rotation.x = Math.PI / 2;
-        this.ceiling.position.y = CEILINGHEIGHT;
-        scene.add(this.ceiling);
+    ceilingTexture.wrapS = THREE.RepeatWrapping;
+    ceilingTexture.wrapT = THREE.RepeatWrapping;
+    ceilingTexture.repeat.set(2, 2); 
 
-        this.ceiling.castShadow = true;
-        this.ceiling.receiveShadow = true;
+    wallTexture.wrapS = THREE.RepeatWrapping;
+    wallTexture.wrapT = THREE.RepeatWrapping;
+    wallTexture.repeat.set(2, 2);  
 
-        const wall_material = new THREE.MeshPhongMaterial({ color: 'green' });
+    // Create geometries
+    const floorGeometry = new THREE.PlaneGeometry(ROOM_SIZE, ROOM_SIZE);
+    const wallGeometry = new THREE.PlaneGeometry(ROOM_SIZE, CEILINGHEIGHT - DISTANCE_FROM_FLOOR);
 
-        // geometry per tutti i muri
-        const wall_geometry = new THREE.PlaneGeometry(ROOM_SIZE, CEILINGHEIGHT - DISTANCE_FROM_FLOOR);
+    // Floor
+    this.floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    this.floor.rotation.x = -Math.PI / 2;
+    this.floor.position.y = DISTANCE_FROM_FLOOR;
+    scene.add(this.floor);
+    this.floor.castShadow = true;
+    this.floor.receiveShadow = true;
 
-        // Muro posteriore
-        this.backWall = new THREE.Mesh(wall_geometry, wall_material);
-        this.backWall.position.z = -ROOM_SIZE / 2;
-        this.backWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
-        scene.add(this.backWall);
+    // Ceiling
+    this.ceiling = new THREE.Mesh(floorGeometry, ceilingMaterial);
+    this.ceiling.rotation.x = Math.PI / 2;
+    this.ceiling.position.y = CEILINGHEIGHT;
+    scene.add(this.ceiling);
+    this.ceiling.castShadow = true;
+    this.ceiling.receiveShadow = true;
 
-        this.backWall.castShadow = true;
-        this.backWall.receiveShadow = true;
+    // Back wall
+    this.backWall = new THREE.Mesh(wallGeometry, wallMaterial);
+    this.backWall.position.z = -ROOM_SIZE / 2;
+    this.backWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
+    scene.add(this.backWall);
+    this.backWall.castShadow = true;
+    this.backWall.receiveShadow = true;
 
-        // Muro anteriore
-        this.frontWall = new THREE.Mesh(wall_geometry, wall_material);
-        this.frontWall.position.z = ROOM_SIZE / 2;
-        this.frontWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
-        this.frontWall.rotation.y = Math.PI;
-        scene.add(this.frontWall);
+    // Front wall
+    this.frontWall = new THREE.Mesh(wallGeometry, wallMaterial);
+    this.frontWall.position.z = ROOM_SIZE / 2;
+    this.frontWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
+    this.frontWall.rotation.y = Math.PI;
+    scene.add(this.frontWall);
+    this.frontWall.castShadow = true;
+    this.frontWall.receiveShadow = true;
 
-        this.frontWall.castShadow = true;
-        this.frontWall.receiveShadow = true;
+    // Left wall
+    this.leftWall = new THREE.Mesh(wallGeometry, wallMaterial);
+    this.leftWall.position.x = -ROOM_SIZE / 2;
+    this.leftWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
+    this.leftWall.rotation.y = Math.PI / 2;
+    scene.add(this.leftWall);
+    this.leftWall.castShadow = true;
+    this.leftWall.receiveShadow = true;
 
-        // Muro sinistro
-        this.leftWall = new THREE.Mesh(wall_geometry, wall_material);
-        this.leftWall.position.x = -ROOM_SIZE / 2;
-        this.leftWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
-        this.leftWall.rotation.y = Math.PI / 2;
-        scene.add(this.leftWall);
-
-        this.leftWall.castShadow = true;
-        this.leftWall.receiveShadow = true;
-
-        // Muro destro
-        this.rightWall = new THREE.Mesh(wall_geometry, wall_material);
-        this.rightWall.position.x = ROOM_SIZE / 2;
-        this.rightWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
-        this.rightWall.rotation.y = -Math.PI / 2;
-        scene.add(this.rightWall);
-
-        this.rightWall.castShadow = true;
-        this.rightWall.receiveShadow = true;
-    }
+    // Right wall
+    this.rightWall = new THREE.Mesh(wallGeometry, wallMaterial);
+    this.rightWall.position.x = ROOM_SIZE / 2;
+    this.rightWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
+    this.rightWall.rotation.y = -Math.PI / 2;
+    scene.add(this.rightWall);
+    this.rightWall.castShadow = true;
+    this.rightWall.receiveShadow = true;
+  }
 }

@@ -60,8 +60,10 @@ export class SceneGUI {
     initpointLight() {
 
       this.helper = new THREE.PointLightHelper(this.pointLight);
+      this.helper.visible = false;
       this.scene.add(this.helper);
       this.cameraHelper = new THREE.CameraHelper(this.pointLight.shadow.camera);
+      this.cameraHelper.visible = false;
       this.scene.add(this.cameraHelper);
   
       var folder = this.gui.addFolder('point_light');

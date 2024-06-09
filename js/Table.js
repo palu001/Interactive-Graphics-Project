@@ -1,33 +1,43 @@
-import * as THREE from 'three';
 
-import {TABLE_WIDTH, TABLE_HEIGHT, TABLE_LENGTH, 
+import * as THREE from 'three';
+import { TABLE_WIDTH, TABLE_HEIGHT, TABLE_LENGTH, 
   CORNER_POCKET_RADIUS, SIDE_POCKET_RADIUS, BORDER_WIDTH, BORDER_HEIGHT, 
   BORDER_LENGTH, SHORT_BORDER_WIDTH, SHORT_BORDER_HEIGHT, SHORT_BORDER_LENGTH, 
-  LEG_WIDTH, LEG_HEIGHT, LEG_DEPTH} from './utils.js';
-
+  LEG_WIDTH, LEG_HEIGHT, LEG_DEPTH } from './utils.js';
 
 export class Table {
   constructor(scene) {
-
-    // billiard table (only playfield)
+    // Table surface
+    const tableMaterial = new THREE.MeshPhysicalMaterial({
+      color: 'green',
+      roughness: 0.6,
+      metalness: 0.2,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1
+    });
     const tableGeometry = new THREE.BoxGeometry(TABLE_WIDTH, TABLE_HEIGHT, TABLE_LENGTH);
-    const tableMaterial = new THREE.MeshPhongMaterial({ color: 'green' });
     this.table = new THREE.Mesh(tableGeometry, tableMaterial);
     this.table.position.y = 1.0; // for legs
     scene.add(this.table);
     this.table.castShadow = true;
     this.table.receiveShadow = true;
+    this.table.shadowSide = THREE.DoubleSide;
 
-    // pockets for balls
-    const cornerPocketGeometry = new THREE.CylinderGeometry(CORNER_POCKET_RADIUS, CORNER_POCKET_RADIUS, 0.1, 32);
-    const sidePocketGeometry = new THREE.CylinderGeometry(SIDE_POCKET_RADIUS, SIDE_POCKET_RADIUS, 0.1, 32);
-    const pocketMaterial = new THREE.MeshPhongMaterial({ color: 'black'});
+    // Pockets for balls
+    const cornerPocketGeometry = new THREE.CylinderGeometry(CORNER_POCKET_RADIUS, CORNER_POCKET_RADIUS, 0.5, 32);
+    const sidePocketGeometry = new THREE.CylinderGeometry(SIDE_POCKET_RADIUS, SIDE_POCKET_RADIUS, 0.5, 32);
+    const pocketMaterial = new THREE.MeshPhysicalMaterial({ color: 'black' });
     const pockets = [];
 
+    
+    const pocketOffset= 0.15; 
     const pocketPositions = [
-        [-TABLE_WIDTH / 2, 1, -TABLE_LENGTH / 2], [TABLE_WIDTH / 2, 1, -TABLE_LENGTH / 2], // back corners
-        [-TABLE_WIDTH / 2, 1, TABLE_LENGTH / 2], [TABLE_WIDTH / 2, 1, TABLE_LENGTH / 2],   // front corners
-        [-TABLE_WIDTH / 2, 1, 0], [TABLE_WIDTH / 2, 1, 0],   // sides
+        [-TABLE_WIDTH / 2 - pocketOffset , 0.85, -TABLE_LENGTH / 2 - pocketOffset], 
+        [TABLE_WIDTH / 2 + pocketOffset, 0.85, -TABLE_LENGTH / 2 - pocketOffset],  // back corners
+        [-TABLE_WIDTH / 2 - pocketOffset, 0.85, TABLE_LENGTH / 2 + pocketOffset], 
+        [TABLE_WIDTH / 2 + pocketOffset, 0.85, TABLE_LENGTH / 2 + pocketOffset],   // front corners
+        [-TABLE_WIDTH / 2 - pocketOffset, 0.85, 0], 
+        [TABLE_WIDTH / 2 + pocketOffset, 0.85, 0],   // sides
     ];
 
     pocketPositions.forEach((position, index) => {
@@ -36,34 +46,49 @@ export class Table {
       const pocket = new THREE.Mesh(pocketGeometry, pocketMaterial);
       pocket.castShadow = true;
       pocket.receiveShadow = true;
-      if (!isSidePocket && (index == 0 || index == 3)){
-        pocket.rotation.z = Math.PI / 4;
-      }
-      else if (!isSidePocket && (index == 1 || index == 2)){
-        pocket.rotation.z = -Math.PI / 4;
-      }
-      pocket.rotation.x = Math.PI / 2;
       pocket.position.set(position[0], position[1], position[2]);
       scene.add(pocket);
       pockets.push(pocket);
     });
 
-    // Create borders material 
-    const borderMaterial = new THREE.MeshPhongMaterial({ color: 'brown'});
+    // Borders
+    const borderMaterial = new THREE.MeshPhysicalMaterial({
+      color: 'brown',
+      roughness: 0.8,
+      metalness: 0.3,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1
+    });
 
     // Long side borders
-    const longBorderGeometry = new THREE.BoxGeometry(BORDER_WIDTH, BORDER_HEIGHT, BORDER_LENGTH);
-    const longBorder1 = new THREE.Mesh(longBorderGeometry, borderMaterial);
-    longBorder1.position.set(-TABLE_WIDTH / 2 - BORDER_WIDTH / 2, 1.05, 0);
-    scene.add(longBorder1);
-    longBorder1.castShadow = true;
-    longBorder1.receiveShadow = true;
+    const halfBorderLength = BORDER_LENGTH / 2 -0.2;
+    const longBorderGeometry = new THREE.BoxGeometry(BORDER_WIDTH, BORDER_HEIGHT, halfBorderLength);
+    
+    // Left side borders
+    const longBorder1a = new THREE.Mesh(longBorderGeometry, borderMaterial);
+    longBorder1a.position.set(-TABLE_WIDTH / 2 - BORDER_WIDTH / 2, 1.05, -TABLE_LENGTH / 4);
+    scene.add(longBorder1a);
+    longBorder1a.castShadow = true;
+    longBorder1a.receiveShadow = true;
 
-    const longBorder2 = new THREE.Mesh(longBorderGeometry, borderMaterial);
-    longBorder2.position.set(TABLE_WIDTH / 2 + BORDER_WIDTH / 2, 1.05, 0);
-    scene.add(longBorder2);
-    longBorder2.castShadow = true;
-    longBorder2.receiveShadow = true;
+    const longBorder1b = new THREE.Mesh(longBorderGeometry, borderMaterial);
+    longBorder1b.position.set(-TABLE_WIDTH / 2 - BORDER_WIDTH / 2, 1.05, TABLE_LENGTH / 4);
+    scene.add(longBorder1b);
+    longBorder1b.castShadow = true;
+    longBorder1b.receiveShadow = true;
+
+    // Right side borders
+    const longBorder2a = new THREE.Mesh(longBorderGeometry, borderMaterial);
+    longBorder2a.position.set(TABLE_WIDTH / 2 + BORDER_WIDTH / 2, 1.05, -TABLE_LENGTH / 4);
+    scene.add(longBorder2a);
+    longBorder2a.castShadow = true;
+    longBorder2a.receiveShadow = true;
+
+    const longBorder2b = new THREE.Mesh(longBorderGeometry, borderMaterial);
+    longBorder2b.position.set(TABLE_WIDTH / 2 + BORDER_WIDTH / 2, 1.05, TABLE_LENGTH / 4);
+    scene.add(longBorder2b);
+    longBorder2b.castShadow = true;
+    longBorder2b.receiveShadow = true;
 
     // Short side borders
     const shortBorderGeometry = new THREE.BoxGeometry(SHORT_BORDER_WIDTH, SHORT_BORDER_HEIGHT, SHORT_BORDER_LENGTH);
@@ -79,9 +104,9 @@ export class Table {
     shortBorder2.castShadow = true;
     shortBorder2.receiveShadow = true;
 
-    // Create table legs
+    // Table legs
+    const legMaterial = new THREE.MeshPhysicalMaterial({ color: 'brown', roughness: 0.8, metalness: 0.2 });
     const legGeometry = new THREE.BoxGeometry(LEG_WIDTH, LEG_HEIGHT, LEG_DEPTH);
-    const legMaterial = new THREE.MeshPhongMaterial({ color: 'brown' });
 
     const legPositions = [
         [-TABLE_WIDTH / 2 + LEG_WIDTH / 2, 0, -TABLE_LENGTH / 2 + LEG_DEPTH / 2],
@@ -91,16 +116,11 @@ export class Table {
     ];
 
     legPositions.forEach(position => {
-        const leg = new THREE.Mesh(legGeometry, legMaterial);
-        leg.castShadow = true;
-        leg.receiveShadow = true;
-        leg.position.set(position[0], position[1], position[2]);
-        scene.add(leg);
+      const leg = new THREE.Mesh(legGeometry, legMaterial);
+      leg.castShadow = true;
+      leg.receiveShadow = true;
+      leg.position.set(position[0], position[1], position[2]);
+      scene.add(leg);
     });
-
-  }   
-
-
-  
-    
+  }
 }

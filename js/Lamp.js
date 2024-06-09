@@ -17,7 +17,10 @@ export class Lamp {
         this.pointLight = new THREE.PointLight({color: 'yellow'});
         this.pointLight.position.set(0, CEILINGHEIGHT - 4, 0);
         this.pointLight.castShadow = true;
+        this.pointLight.shadow.mapSize.width = 4096;
+        this.pointLight.shadow.mapSize.height = 4096;
         this.pointLight.intensity = 150;
+        
         scene.add(this.pointLight);
 
         //filo della lampada
