@@ -53,7 +53,7 @@ function detectCollisions(scene, balls, game) {
 
   // Collisioni Palla-Buca
   balls.forEach((ball, index) => {
-    const pocketOffset = 0.15; 
+    
     const pocketPositions = [
         [-TABLE_WIDTH / 2  , 1.12, -TABLE_LENGTH / 2 ], 
         [TABLE_WIDTH / 2 , 1.12, -TABLE_LENGTH / 2 ],  // back corners
@@ -68,7 +68,7 @@ function detectCollisions(scene, balls, game) {
       const pocketPosition = new THREE.Vector3(position[0], position[1], position[2]);
       const distance = ball.mesh.position.distanceTo(pocketPosition);
       //Rimuovere condizione
-      if (distance < pocketRadius/2) {
+      if (distance < BALL_RADIUS/2 + pocketRadius/2) {
        
         if (ball.type != 'cue') {
           

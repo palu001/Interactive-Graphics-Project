@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 import { TABLE_WIDTH, TABLE_HEIGHT, TABLE_LENGTH, 
   CORNER_POCKET_RADIUS, SIDE_POCKET_RADIUS, BORDER_WIDTH, BORDER_HEIGHT, 
@@ -20,12 +19,12 @@ export class Table {
     this.table.shadowSide = THREE.DoubleSide;
 
     // Pockets for balls
-    const cornerPocketGeometry = new THREE.CylinderGeometry(CORNER_POCKET_RADIUS, CORNER_POCKET_RADIUS, 0.5, 32);
-    const sidePocketGeometry = new THREE.CylinderGeometry(SIDE_POCKET_RADIUS, SIDE_POCKET_RADIUS, 0.5, 32);
-    const pocketMaterial = new THREE.MeshPhysicalMaterial({ color: 'black' });
+    const cornerPocketGeometry = new THREE.CylinderGeometry(CORNER_POCKET_RADIUS, CORNER_POCKET_RADIUS, 0.5, 32, 1, false, 0, Math.PI / 2);
+    const sidePocketGeometry = new THREE.CylinderGeometry(SIDE_POCKET_RADIUS, SIDE_POCKET_RADIUS, 0.5, 32, 1, false, 0, Math.PI);
+    const pocketMaterial = new THREE.MeshPhysicalMaterial({ color: 'black', side: THREE.DoubleSide });
     this.pockets = [];
 
-    const pocketOffset= 0.15; 
+    const pocketOffset = 0.15; 
     const pocketPositions = [
         [-TABLE_WIDTH / 2 - pocketOffset , 0.85, -TABLE_LENGTH / 2 - pocketOffset], 
         [TABLE_WIDTH / 2 + pocketOffset, 0.85, -TABLE_LENGTH / 2 - pocketOffset],  // back corners
@@ -42,6 +41,14 @@ export class Table {
       pocket.castShadow = true;
       pocket.receiveShadow = true;
       pocket.position.set(position[0], position[1], position[2]);
+      // Ruota la buca per orientare la parte aperta verso il tavolo
+      if (index === 0) pocket.rotation.y = 0; // back left corner
+      else if (index === 1) pocket.rotation.y = -Math.PI / 2; // back right corner
+      else if (index === 2) pocket.rotation.y = +Math.PI / 2; // front left corner
+      else if (index === 3) pocket.rotation.y = Math.PI; // front right corner
+      else if (index === 4) pocket.rotation.y = 0; // left side
+      else if (index === 5) pocket.rotation.y = -Math.PI; // right side
+
       scene.add(pocket);
       this.pockets.push(pocket);
     });
@@ -56,7 +63,7 @@ export class Table {
     });
 
     // Long side borders
-    const halfBorderLength = BORDER_LENGTH / 2 -0.2;
+    const halfBorderLength = BORDER_LENGTH / 2 - 0.2;
     const longBorderGeometry = new THREE.BoxGeometry(BORDER_WIDTH, BORDER_HEIGHT, halfBorderLength);
     
     // Left side borders

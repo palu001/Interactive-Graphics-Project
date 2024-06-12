@@ -1,6 +1,8 @@
 import { AxisGridHelper } from '../js/jsHelper/AxisGridHelper.js';
 import * as THREE from 'three';
 import { Ball } from './Ball.js';
+import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+import {MTLLoader} from 'three/addons/loaders/MTLLoader.js';
 
 
 //GUI for Helper
@@ -33,7 +35,7 @@ const BORDER_HEIGHT = 0.3;
 export { BORDER_HEIGHT };
 const BORDER_LENGTH = TABLE_LENGTH - .26;
 export { BORDER_LENGTH };
-const SHORT_BORDER_WIDTH = TABLE_WIDTH -0.36;
+const SHORT_BORDER_WIDTH = TABLE_WIDTH -0.21;
 export { SHORT_BORDER_WIDTH };
 const SHORT_BORDER_HEIGHT = 0.3;
 export { SHORT_BORDER_HEIGHT };
@@ -158,4 +160,42 @@ export function illuminatePocket(game, pockets){
     pockets[5].material.color.set('black');
     pockets[4].material.color.set('black');
   }
+}
+
+export async function loadModel(url1, url2, scene, position, rotation, scale_factor, manager) {
+  const objLoader = new OBJLoader(manager);
+  const mtlLoader = new MTLLoader(manager);
+
+  let model_obj;
+
+  await mtlLoader.loadAsync(url2).then((mtl) => {
+      mtl.preload();
+      for (const material of Object.values(mtl.materials)) {
+          material.side = THREE.DoubleSide;
+      }
+      objLoader.setMaterials(mtl);
+      return objLoader.loadAsync(url1);
+  }).then((model) => {
+      // Re-center geometry
+      model.traverse((child) => {
+          if (child.isMesh) {
+              child.geometry.computeBoundingBox();
+              const boundingBox = child.geometry.boundingBox;
+              const center = new THREE.Vector3();
+              boundingBox.getCenter(center);
+
+              // Enable shadows
+              child.castShadow = true;
+              
+          }
+      });
+      model.scale.set(scale_factor, scale_factor, scale_factor);
+      model.position.set(position.x, position.y, position.z);
+      model.rotation.set(rotation.x, rotation.y, rotation.z);
+      scene.add(model);
+
+      model.boundingBox = new THREE.Box3().setFromObject(model);
+      model_obj = model;
+  });
+  return { model_obj };
 }

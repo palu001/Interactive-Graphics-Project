@@ -1,0 +1,26 @@
+# Blender 4.1.1 MTL File: 'security_camera_02_4k.blend'
+# www.blender.org
+
+newmtl security_camera_02
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/security_camera_02_diff_4k.jpg
+map_Ns textures/security_camera_02_rough_4k.exr
+map_refl textures/security_camera_02_metal_4k.exr
+map_Bump -bm 1.000000 textures/security_camera_02_nor_gl_4k.exr
+
+newmtl security_camera_02_glass
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd textures/security_camera_02_diff_4k.jpg
+map_Ns textures/security_camera_02_rough_4k.exr
+map_refl textures/security_camera_02_metal_4k.exr
+map_d textures/security_camera_02_opacity_4k.png
+map_Bump -bm 1.000000 textures/security_camera_02_nor_gl_4k.exr

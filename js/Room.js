@@ -6,9 +6,9 @@ export class Room {
     const textureLoader = new THREE.TextureLoader();
     
     // Load textures
-    const floorTexture = textureLoader.load('textures/room/wood_texture.png');
-    const ceilingTexture = textureLoader.load('textures/room/wood_texture.png');
-    const wallTexture = textureLoader.load('textures/room/wood_texture.png');
+    const floorTexture = textureLoader.load('textures/room/wood_floor_diff_4k.jpg');
+    const ceilingTexture = textureLoader.load('textures/room/oak_veneer_01_diff_4k.jpg');
+    const wallTexture = textureLoader.load('textures/room/oak_veneer_01_diff_4k.jpg');
 
     // Create materials with textures
     const floorMaterial = new THREE.MeshPhysicalMaterial({ map: floorTexture, roughness: 0.5, metalness: 0.2 });
