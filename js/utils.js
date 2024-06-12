@@ -53,7 +53,7 @@ const CEILINGHEIGHT = 10;
 export { CEILINGHEIGHT };
 const FRICTION = 1.01;
 export { FRICTION };
-const LIMIT_VELOCITY = 0.01;
+const LIMIT_VELOCITY = 0.02;
 export { LIMIT_VELOCITY };
 const SCALAR_VELOCITY = 3;
 export { SCALAR_VELOCITY };
@@ -105,15 +105,12 @@ export async function addBallsToScene(scene, textureFolder, balls) {
 
   // Position the cue ball in front of the triangle
   balls[0].setPosition(0, 1.12, 1.5);
-
-  console.log('All balls added to the scene:', balls);
 }
 
 
 export function checkVelocities(balls){
   let allBallsStopped = true;
   for (let i = 0; i < balls.length; i++) {
-    console.log("ball ", i, balls[i].velocity.length());
     if (balls[i].velocity.length() > LIMIT_VELOCITY) {
       allBallsStopped = false;
       break;
@@ -140,3 +137,25 @@ function arrangeBallsInTriangle(balls) {
   }
 }
 
+export function illuminatePocket(game, pockets){
+  if (game.currentPlayer == 1 && game.player1Score == 7){
+    if (game.player1Position == 1){
+      pockets[5].material.color.set('yellow');
+    }
+    else{
+      pockets[4].material.color.set('yellow');
+    }
+  }
+  else if (game.currentPlayer == 2 && game.player2Score == 7){
+    if (game.player2Position == 1){
+      pockets[5].material.color.set('yellow');
+    }
+    else{
+      pockets[4].material.color.set('yellow');
+    }
+  }
+  else{
+    pockets[5].material.color.set('black');
+    pockets[4].material.color.set('black');
+  }
+}

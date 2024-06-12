@@ -8,12 +8,8 @@ import { TABLE_WIDTH, TABLE_HEIGHT, TABLE_LENGTH,
 export class Table {
   constructor(scene) {
     // Table surface
-    const tableMaterial = new THREE.MeshPhysicalMaterial({
+    const tableMaterial = new THREE.MeshPhongMaterial({
       color: 'green',
-      roughness: 0.6,
-      metalness: 0.2,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.1
     });
     const tableGeometry = new THREE.BoxGeometry(TABLE_WIDTH, TABLE_HEIGHT, TABLE_LENGTH);
     this.table = new THREE.Mesh(tableGeometry, tableMaterial);
@@ -27,9 +23,8 @@ export class Table {
     const cornerPocketGeometry = new THREE.CylinderGeometry(CORNER_POCKET_RADIUS, CORNER_POCKET_RADIUS, 0.5, 32);
     const sidePocketGeometry = new THREE.CylinderGeometry(SIDE_POCKET_RADIUS, SIDE_POCKET_RADIUS, 0.5, 32);
     const pocketMaterial = new THREE.MeshPhysicalMaterial({ color: 'black' });
-    const pockets = [];
+    this.pockets = [];
 
-    
     const pocketOffset= 0.15; 
     const pocketPositions = [
         [-TABLE_WIDTH / 2 - pocketOffset , 0.85, -TABLE_LENGTH / 2 - pocketOffset], 
@@ -43,12 +38,12 @@ export class Table {
     pocketPositions.forEach((position, index) => {
       const isSidePocket = index >= 4;
       const pocketGeometry = isSidePocket ? sidePocketGeometry : cornerPocketGeometry;
-      const pocket = new THREE.Mesh(pocketGeometry, pocketMaterial);
+      const pocket = new THREE.Mesh(pocketGeometry, pocketMaterial.clone());
       pocket.castShadow = true;
       pocket.receiveShadow = true;
       pocket.position.set(position[0], position[1], position[2]);
       scene.add(pocket);
-      pockets.push(pocket);
+      this.pockets.push(pocket);
     });
 
     // Borders

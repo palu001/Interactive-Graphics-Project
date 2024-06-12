@@ -36,60 +36,43 @@ function detectCollisions(scene, balls, game) {
   balls.forEach((ball, index) => {
     const pocketOffset = 0.15; 
     const pocketPositions = [
-        [-TABLE_WIDTH / 2 - 0 , 1.12, -TABLE_LENGTH / 2 - 0], 
-        [TABLE_WIDTH / 2 + 0, 1.12, -TABLE_LENGTH / 2 - 0],  // back corners
-        [-TABLE_WIDTH / 2 - 0, 1.12, TABLE_LENGTH / 2 + 0], 
-        [TABLE_WIDTH / 2 + 0, 1.12, TABLE_LENGTH / 2 + 0],   // front corners
-        [-TABLE_WIDTH / 2 - 0, 1.12, 0], 
-        [TABLE_WIDTH / 2 + 0, 1.12, 0],   // sides
+        [-TABLE_WIDTH / 2  , 1.12, -TABLE_LENGTH / 2 ], 
+        [TABLE_WIDTH / 2 , 1.12, -TABLE_LENGTH / 2 ],  // back corners
+        [-TABLE_WIDTH / 2 , 1.12, TABLE_LENGTH / 2 ], 
+        [TABLE_WIDTH / 2 , 1.12, TABLE_LENGTH / 2 ],   // front corners
+        [-TABLE_WIDTH / 2 , 1.12, 0], 
+        [TABLE_WIDTH / 2 , 1.12, 0],   // sides
     ];
 
     pocketPositions.forEach(position => {
       const pocketRadius = (position[2] === 0) ? SIDE_POCKET_RADIUS : CORNER_POCKET_RADIUS;
       const pocketPosition = new THREE.Vector3(position[0], position[1], position[2]);
       const distance = ball.mesh.position.distanceTo(pocketPosition);
-      if (distance < pocketRadius/2) {
+      //Rimuovere condizione
+      if (distance < pocketRadius/2 + 1) {
+        console.log(ball.name + " in buca");
         if (ball.type != 'cue') {
+          
+          const pocket_string = (position[2] === 0) ? 'side' : 'corner';
+          const pocket_int = (position[0] == TABLE_WIDTH/2) ? 2 : 1;
+          
           scene.remove(ball.mesh);
           balls.splice(index, 1);
-          game.addScore(ball.type);
+          game.addScore(ball.type, pocket_string, pocket_int, ball.name );
         }
         else{
-          const newPosition = findFreePositionNear(ball.lastPosition, balls);
-          ball.setPosition(newPosition.x, newPosition.y, newPosition.z);
-          ball.velocity.set(0, 0, 0);
-          ball.angularVelocity.set(0, 0, 0);
+          if (!game.cueinPocket){
+            ball.velocity = new THREE.Vector3(0, 0, 0);
+            ball.angularVelocityMagnitude = 0;
+            ball.mesh.position.set(-TABLE_WIDTH/2 -2 , 1.12, 0);
+            game.cueinPocket = true;
+          }
         }
       }
     });
   });
 }
 
-function findFreePositionNear(position, balls) {
-  // Define a small offset to try nearby positions
-  const offset = BALL_RADIUS * 3;
-  const attempts = [
-    new THREE.Vector3(position.x, position.y, position.z),
-    new THREE.Vector3(position.x + offset, position.y, position.z),
-    new THREE.Vector3(position.x - offset, position.y, position.z),
-    new THREE.Vector3(position.x, position.y, position.z + offset),
-    new THREE.Vector3(position.x, position.y, position.z - offset),
-  ];
-
-  for (const attempt of attempts) {
-    let collision = false;
-    for (const ball of balls) {
-      if (ball.type!='cue' && attempt.distanceTo(ball.mesh.position) < offset) {
-        collision = true;
-        break;
-      }
-    }
-    if (!collision) {
-      return attempt;
-    }
-  }
-  return position; // Default to original position if no free spot is found
-}
 
 export function updatePhysics(deltaTime, scene, balls, game) {
   balls.forEach(ball => {
@@ -106,6 +89,11 @@ export function updatePhysics(deltaTime, scene, balls, game) {
       const rotationAxis = new THREE.Vector3(ball.velocity.z, 0, -ball.velocity.x).normalize();
       const rotationAngle = angularVelocityMagnitude * deltaTime;
       ball.mesh.rotateOnWorldAxis(rotationAxis, rotationAngle);
+      if (ball.type === 'cue') {
+      const vec3 = new THREE.Vector3();
+      ball.mesh.getWorldPosition(vec3)
+      console.log(ball.mesh.position, vec3);
+      }
     } else {
       console.error("Ball velocity is undefined", ball);
     }

@@ -26,7 +26,7 @@ export class Room {
 
     wallTexture.wrapS = THREE.RepeatWrapping;
     wallTexture.wrapT = THREE.RepeatWrapping;
-    wallTexture.repeat.set(2, 2);  
+    wallTexture.repeat.set(2, 1);  
 
     // Create geometries
     const floorGeometry = new THREE.PlaneGeometry(ROOM_SIZE, ROOM_SIZE);

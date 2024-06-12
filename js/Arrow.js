@@ -17,12 +17,15 @@ export class Arrow {
     this.mouse_arrow = new THREE.Vector2();
     this.arrowHelper = null;
 
+    this.dragControls = false;
+
     window.addEventListener('mousedown', this.onMouseClick.bind(this), false);
     window.addEventListener('mousemove', this.onMouseMove.bind(this), false);
     window.addEventListener('keydown', this.onEnterPress.bind(this), false);
   }
 
   onMouseClick(event) {
+    if (this.dragControls) return;
     // Calculate mouse position in normalized device coordinates
     this.mouse_click.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse_click.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -35,7 +38,6 @@ export class Arrow {
 
     if (intersects.length > 0) {
       const mesh = this.balls[0].mesh;
-      console.log('Ball clicked!');
       if (!this.arrowHelper && checkVelocities(this.balls)) {
         this.arrowHelper = new THREE.ArrowHelper(
           new THREE.Vector3(1, 0, 0),
@@ -53,6 +55,10 @@ export class Arrow {
     }
     else{
       this.controls.enabled = true;
+      if (this.arrowHelper) {
+        this.scene.remove(this.arrowHelper);
+        this.arrowHelper = null;
+      }
     }
   }
 
@@ -79,18 +85,14 @@ export class Arrow {
         this.arrowHelper.setLength(length);
         this.arrowHelper.dir = direction;
         this.arrowHelper.length = length;
-        console.log('move');
       }
     }
   }
 
   onEnterPress(event) {
     if (event.key === 'Enter' && this.arrowHelper) {
-      console.log(this.arrowHelper);
       const direction = this.arrowHelper.dir.clone(); // Clone to avoid modifying the original
       const length = this.arrowHelper.length * SCALAR_VELOCITY;
-      console.log('Direction:', direction, 'Length:', length);
-
       // Save the cue ball's position before the shot
       this.balls[0].lastPosition = this.balls[0].mesh.position.clone();
       
