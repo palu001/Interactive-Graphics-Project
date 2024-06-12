@@ -24,11 +24,30 @@ function detectCollisions(scene, balls, game) {
 
   // Collisioni Palla-Bordo
   balls.forEach(ball => {
-    if (ball.mesh.position.x <= -TABLE_WIDTH / 2 + BALL_RADIUS || ball.mesh.position.x >= TABLE_WIDTH / 2 - BALL_RADIUS) {
+    const ballPosition = ball.mesh.position;
+    
+    // Define the planes for the table borders
+    const leftBorder = new THREE.Vector3(-TABLE_WIDTH / 2, 1.12, ballPosition.z);
+    const rightBorder = new THREE.Vector3(TABLE_WIDTH / 2, 1.12, ballPosition.z);
+    const topBorder = new THREE.Vector3(ballPosition.x, 1.12, -TABLE_LENGTH / 2);
+    const bottomBorder = new THREE.Vector3(ballPosition.x, 1.12, TABLE_LENGTH / 2);
+
+    // Check distance to borders
+    if (ballPosition.distanceTo(leftBorder) < BALL_RADIUS) {
       ball.velocity.x *= -1;
+      ball.mesh.position.x = -TABLE_WIDTH / 2 + BALL_RADIUS; 
     }
-    if (ball.mesh.position.z <= -TABLE_LENGTH / 2 + BALL_RADIUS || ball.mesh.position.z >= TABLE_LENGTH / 2 - BALL_RADIUS) {
+    if (ballPosition.distanceTo(rightBorder) < BALL_RADIUS) {
+      ball.velocity.x *= -1;
+      ball.mesh.position.x = TABLE_WIDTH / 2 - BALL_RADIUS;  
+    }
+    if (ballPosition.distanceTo(topBorder) < BALL_RADIUS) {
       ball.velocity.z *= -1;
+      ball.mesh.position.z = -TABLE_LENGTH / 2 + BALL_RADIUS;  
+    }
+    if (ballPosition.distanceTo(bottomBorder) < BALL_RADIUS) {
+      ball.velocity.z *= -1;
+      ball.mesh.position.z = TABLE_LENGTH / 2 - BALL_RADIUS;  
     }
   });
 
@@ -49,8 +68,8 @@ function detectCollisions(scene, balls, game) {
       const pocketPosition = new THREE.Vector3(position[0], position[1], position[2]);
       const distance = ball.mesh.position.distanceTo(pocketPosition);
       //Rimuovere condizione
-      if (distance < pocketRadius/2 + 1) {
-        console.log(ball.name + " in buca");
+      if (distance < pocketRadius/2) {
+       
         if (ball.type != 'cue') {
           
           const pocket_string = (position[2] === 0) ? 'side' : 'corner';
@@ -89,11 +108,6 @@ export function updatePhysics(deltaTime, scene, balls, game) {
       const rotationAxis = new THREE.Vector3(ball.velocity.z, 0, -ball.velocity.x).normalize();
       const rotationAngle = angularVelocityMagnitude * deltaTime;
       ball.mesh.rotateOnWorldAxis(rotationAxis, rotationAngle);
-      if (ball.type === 'cue') {
-      const vec3 = new THREE.Vector3();
-      ball.mesh.getWorldPosition(vec3)
-      console.log(ball.mesh.position, vec3);
-      }
     } else {
       console.error("Ball velocity is undefined", ball);
     }
