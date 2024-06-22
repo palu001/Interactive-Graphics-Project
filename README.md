@@ -1,3 +1,3 @@
 # Interactive-Graphics-Project
 
-It is the project of the course of Interactive Graphics 2023-2024. It is a billiard game.
+It is the project of the course of Interactive Graphics 2023-2024. It is a room where there is a billiard table that two player can use. It has realistic physics simulation to handle the ball movements and collisions. he room is designed with textures and models in order to create a realistic experience. It uses lighting and shadow in order to create a realistic environment. The project uses Three.js but the Physics is implemented without other libraries.

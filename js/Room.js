@@ -5,34 +5,36 @@ export class Room {
   constructor(scene) {
     const textureLoader = new THREE.TextureLoader();
     
-    // Load textures
+    // Load textures for floor, ceiling, and walls
     const floorTexture = textureLoader.load('textures/room/wood_floor_diff_4k.jpg');
     const ceilingTexture = textureLoader.load('textures/room/oak_veneer_01_diff_4k.jpg');
     const wallTexture = textureLoader.load('textures/room/oak_veneer_01_diff_4k.jpg');
 
-    // Create materials with textures
-    const floorMaterial = new THREE.MeshPhysicalMaterial({ map: floorTexture, roughness: 0.5, metalness: 0.2 });
-    const ceilingMaterial = new THREE.MeshPhysicalMaterial({ map: ceilingTexture, roughness: 0.5, metalness: 0.2 });
-    const wallMaterial = new THREE.MeshPhysicalMaterial({ map: wallTexture, roughness: 0.5, metalness: 0.2 });
+    // Create materials with the loaded textures
+    const floorMaterial = new THREE.MeshPhongMaterial({ map: floorTexture, });
+    const ceilingMaterial = new THREE.MeshPhongMaterial({ map: ceilingTexture, });
+    const wallMaterial = new THREE.MeshPhongMaterial({ map: wallTexture, });
 
-   
-    floorTexture.wrapS = THREE.RepeatWrapping;
-    floorTexture.wrapT = THREE.RepeatWrapping;
-    floorTexture.repeat.set(2, 2); 
+    // Set texture wrapping and repeat for floor texture
+    floorTexture.wrapS = THREE.RepeatWrapping; // Repeat the texture horizontally
+    floorTexture.wrapT = THREE.RepeatWrapping; // Repeat the texture vertically
+    floorTexture.repeat.set(2, 2);  //The texture is mapped 4 times
 
+    // Set texture wrapping and repeat for ceiling texture
     ceilingTexture.wrapS = THREE.RepeatWrapping;
     ceilingTexture.wrapT = THREE.RepeatWrapping;
     ceilingTexture.repeat.set(2, 2); 
 
+    // Set texture wrapping and repeat for wall texture
     wallTexture.wrapS = THREE.RepeatWrapping;
     wallTexture.wrapT = THREE.RepeatWrapping;
     wallTexture.repeat.set(2, 1);  
 
-    // Create geometries
+    // Create geometries for floor and walls
     const floorGeometry = new THREE.PlaneGeometry(ROOM_SIZE, ROOM_SIZE);
     const wallGeometry = new THREE.PlaneGeometry(ROOM_SIZE, CEILINGHEIGHT - DISTANCE_FROM_FLOOR);
 
-    // Floor
+    // Create the floor mesh, set its position and rotation, and add it to the scene
     this.floor = new THREE.Mesh(floorGeometry, floorMaterial);
     this.floor.rotation.x = -Math.PI / 2;
     this.floor.position.y = DISTANCE_FROM_FLOOR;
@@ -40,7 +42,7 @@ export class Room {
     this.floor.castShadow = true;
     this.floor.receiveShadow = true;
 
-    // Ceiling
+    // Create the ceiling mesh, set its position and rotation, and add it to the scene
     this.ceiling = new THREE.Mesh(floorGeometry, ceilingMaterial);
     this.ceiling.rotation.x = Math.PI / 2;
     this.ceiling.position.y = CEILINGHEIGHT;
@@ -48,7 +50,7 @@ export class Room {
     this.ceiling.castShadow = true;
     this.ceiling.receiveShadow = true;
 
-    // Back wall
+    // Create the back wall mesh, set its position and rotation, and add it to the scene
     this.backWall = new THREE.Mesh(wallGeometry, wallMaterial);
     this.backWall.position.z = -ROOM_SIZE / 2;
     this.backWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
@@ -56,7 +58,7 @@ export class Room {
     this.backWall.castShadow = true;
     this.backWall.receiveShadow = true;
 
-    // Front wall
+    // Create the front wall mesh, set its position and rotation, and add it to the scene
     this.frontWall = new THREE.Mesh(wallGeometry, wallMaterial);
     this.frontWall.position.z = ROOM_SIZE / 2;
     this.frontWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
@@ -65,7 +67,7 @@ export class Room {
     this.frontWall.castShadow = true;
     this.frontWall.receiveShadow = true;
 
-    // Left wall
+    // Create the left wall mesh, set its position and rotation, and add it to the scene
     this.leftWall = new THREE.Mesh(wallGeometry, wallMaterial);
     this.leftWall.position.x = -ROOM_SIZE / 2;
     this.leftWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;
@@ -74,7 +76,7 @@ export class Room {
     this.leftWall.castShadow = true;
     this.leftWall.receiveShadow = true;
 
-    // Right wall
+    // Create the right wall mesh, set its position and rotation, and add it to the scene
     this.rightWall = new THREE.Mesh(wallGeometry, wallMaterial);
     this.rightWall.position.x = ROOM_SIZE / 2;
     this.rightWall.position.y = (CEILINGHEIGHT + DISTANCE_FROM_FLOOR) / 2;

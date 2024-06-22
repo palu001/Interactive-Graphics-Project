@@ -11,8 +11,8 @@ const gui = new GUI();
 export { gui };
 
 //Function for Grid
-export function makeAxisGrid(node, label, units, folder) {
-    const helper = new AxisGridHelper(node, units);
+export function makeAxisGrid(node, label, folder) {
+    const helper = new AxisGridHelper(node);
     folder.add(helper, 'visible').name(label);
 }
 
@@ -27,7 +27,7 @@ const BALL_RADIUS = 0.07;
 export { BALL_RADIUS };
 const CORNER_POCKET_RADIUS = 0.36;
 export { CORNER_POCKET_RADIUS };
-const SIDE_POCKET_RADIUS = 0.17;
+const SIDE_POCKET_RADIUS = 0.20;
 export { SIDE_POCKET_RADIUS };
 const BORDER_WIDTH = 0.127;
 export { BORDER_WIDTH };
@@ -62,7 +62,6 @@ export { SCALAR_VELOCITY };
 
 
 //Functions used in order to create balls and insert them into the scene
-
 function createBall(i, scene, textureFolder) {
   const texturePath = i === 0 ? `${textureFolder}whiteball.png` : `${textureFolder}${i}ball.png`;
   return new Ball(scene, texturePath, i);
@@ -71,7 +70,7 @@ function createBall(i, scene, textureFolder) {
 function waitForMeshCreation(ball) {
   return new Promise((resolve) => {
     function checkMesh() {
-      if (ball.mesh && ball.velocity && ball.angularVelocity) {
+      if (ball.mesh && ball.velocity) {
         resolve(ball);
       } else {
         requestAnimationFrame(checkMesh);
@@ -82,10 +81,7 @@ function waitForMeshCreation(ball) {
 }
 
 function initializeBall(ball, scene) {
-  //ball.setPosition((Math.random() - 0.5) * TABLE_WIDTH, 1.12, (Math.random() - 0.5) * TABLE_LENGTH);
-  //ball.velocity = new THREE.Vector3((Math.random() - 0.5), 0, (Math.random() - 0.5));
   ball.velocity = new THREE.Vector3(0, 0, 0);
-  ball.angularVelocity = new THREE.Vector3();
 }
 
 async function addBall(i, scene, textureFolder, balls) {
@@ -105,7 +101,7 @@ export async function addBallsToScene(scene, textureFolder, balls) {
   // Arrange the balls in a triangle formation
   arrangeBallsInTriangle(balls);
 
-  // Position the cue ball in front of the triangle
+  // Position the white ball in front of the triangle
   balls[0].setPosition(0, 1.12, 1.5);
 }
 
@@ -123,16 +119,16 @@ export function checkVelocities(balls){
 
 function arrangeBallsInTriangle(balls) {
   const startX = 0; // X coordinate for the first ball
-  const startZ = -1.5; // Z coordinate for the first ball, adjust as needed
+  const startZ = -1.5; // Z coordinate for the first ball
   const rowSpacing = BALL_RADIUS * 2;
   const colSpacing = BALL_RADIUS * 2;
 
-  let ballIndex = 1; // Start from 1 because 0 is the cue ball
+  let ballIndex = 1; // Start from 1 because 0 is the white ball
 
-  for (let row = 0; row < 5; row++) { // 5 rows in a standard 15-ball triangle
+  for (let row = 0; row < 5; row++) { // 5 rows in a standard 15-balls triangle (from left to right)
     for (let col = 0; col <= row; col++) {
-      const x = startX + colSpacing * (col - row / 2);
-      const z = startZ - rowSpacing * row;
+      const x = startX + colSpacing * (col - row / 2); // column
+      const z = startZ - rowSpacing * row; // row
       balls[ballIndex].setPosition(x, 1.12, z);
       ballIndex++;
     }
@@ -169,32 +165,23 @@ export async function loadModel(url1, url2, scene, position, rotation, scale_fac
   let model_obj;
 
   await mtlLoader.loadAsync(url2).then((mtl) => {
-      mtl.preload();
+      mtl.preload(); // it prepares the material for the obj file
       for (const material of Object.values(mtl.materials)) {
           material.side = THREE.DoubleSide;
       }
       objLoader.setMaterials(mtl);
       return objLoader.loadAsync(url1);
   }).then((model) => {
-      // Re-center geometry
       model.traverse((child) => {
           if (child.isMesh) {
-              child.geometry.computeBoundingBox();
-              const boundingBox = child.geometry.boundingBox;
-              const center = new THREE.Vector3();
-              boundingBox.getCenter(center);
-
               // Enable shadows
               child.castShadow = true;
-              
           }
       });
       model.scale.set(scale_factor, scale_factor, scale_factor);
       model.position.set(position.x, position.y, position.z);
       model.rotation.set(rotation.x, rotation.y, rotation.z);
       scene.add(model);
-
-      model.boundingBox = new THREE.Box3().setFromObject(model);
       model_obj = model;
   });
   return { model_obj };
