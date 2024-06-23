@@ -21,6 +21,7 @@ export class SceneGUI {
       }
       this.initAmbientLight();
       this.initpointLight();
+      this.gui.close();
   }
   
   // Initializes the scene folder in the GUI.

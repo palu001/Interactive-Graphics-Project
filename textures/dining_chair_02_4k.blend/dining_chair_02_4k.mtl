@@ -11,4 +11,4 @@ illum 2
 map_Kd textures/dining_chair_02_diff_4k.jpg
 map_Ns textures/dining_chair_02_rough_4k.jpg
 map_refl textures/dining_chair_02_metal_4k.exr
-map_Bump -bm 1.000000 textures/dining_chair_02_nor_gl_4k.exr
+map_bump -bm 1.000000 textures/dining_chair_02_nor_gl_4k.exr

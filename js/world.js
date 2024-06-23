@@ -8,7 +8,10 @@ import { addBallsToScene, illuminatePocket, loadModel, ROOM_SIZE, TABLE_LENGTH }
 import { updatePhysics } from '../js/Physics.js';
 import { Arrow } from '../js/Arrow.js';
 import { Game } from '../js/Game.js';
+import Stats from 'three/addons/libs/stats.module.js';
 
+
+let stats = new Stats();
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('black');
 
@@ -16,6 +19,8 @@ const canvas = document.querySelector('#c');
 const progressBarContainer = document.getElementById('progress-bar-container');
 const progressBar = document.getElementById('progress-bar');
 const scoreboard = document.getElementById('scoreboard');
+const framerate = document.getElementById('framerate');
+framerate.appendChild(stats.dom);
 
 // Define camera properties
 const fov = 75;  // amplitude of the camera
@@ -170,6 +175,9 @@ async function initScene() {
         updatePhysics(deltaTime, scene, balls, game);
         // Render the scene
         renderer.render(scene, camera);
+
+        //frame rate
+        stats.update();
         // Request the next frame
         requestAnimationFrame(animate);
     }
