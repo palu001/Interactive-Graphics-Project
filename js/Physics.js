@@ -47,7 +47,7 @@ function detectCollisions(scene, balls, game) {
     }
   }
 
-  // Collisioni Palla-Bordo
+  // Collision Border-Ball : i change the direction of the ball if it hits the border 
   balls.forEach(ball => {
     const ballPosition = ball.mesh.position;
     
@@ -76,7 +76,7 @@ function detectCollisions(scene, balls, game) {
     }
   });
 
-  // Collisioni Palla-Buca
+  // Collision Pocket-Ball
   balls.forEach((ball, index) => {
     
     const pocketPositions = [
@@ -107,8 +107,8 @@ function detectCollisions(scene, balls, game) {
           if (!game.whiteinPocket){
             ball.velocity = new THREE.Vector3(0, 0, 0);
             ball.angularVelocityMagnitude = 0;
-            ball.mesh.position.set(-TABLE_WIDTH/2 -2 , 1.12, 0);
-            game.whiteinPocket = true;
+            ball.mesh.position.set(-TABLE_WIDTH/2 -2 , 1.12, 0); // not on the table
+            game.whiteinPocket = true; // it will be seen in the changeTurn function
           }
         }
       }
@@ -121,10 +121,12 @@ export function updatePhysics(deltaTime, scene, balls, game) {
   balls.forEach(ball => {
     if (ball.mesh) { 
       if (ball.velocity.length() > LIMIT_VELOCITY) {
+        // uniformly decrease the velocity of the ball
         const at = FRICTION * deltaTime;
         const vector_at = new THREE.Vector3(at, 0, at);
         const absolute_velocity = new THREE.Vector3(Math.abs(ball.velocity.x), 0, Math.abs(ball.velocity.z));
         const new_velocity = absolute_velocity.sub(vector_at);
+        // careful with the sign of the velocity because it shouldn't change direction
         new_velocity.x = Math.max(0, new_velocity.x) * Math.sign(ball.velocity.x);
         new_velocity.z = Math.max(0, new_velocity.z) * Math.sign(ball.velocity.z);
         ball.velocity = new_velocity;
@@ -137,7 +139,7 @@ export function updatePhysics(deltaTime, scene, balls, game) {
 
       // Angular velocity and rotation
       const angularVelocityMagnitude = ball.velocity.length() / BALL_RADIUS;
-      const rotationAxis = new THREE.Vector3(ball.velocity.z, 0, -ball.velocity.x).normalize(); // It is perpendicular to the velocity
+      const rotationAxis = new THREE.Vector3(ball.velocity.z, 0, -ball.velocity.x).normalize(); // It is perpendicular to the velocity vector
       const rotationAngle = angularVelocityMagnitude * deltaTime;
       ball.mesh.rotateOnWorldAxis(rotationAxis, rotationAngle); // rotate the ball of the angle around the axis
     } else {

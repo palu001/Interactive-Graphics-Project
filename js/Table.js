@@ -18,8 +18,8 @@ export class Table {
     this.table.receiveShadow = true;
     
     // Pockets for balls that are a quarter of a Cylinder
-    // default values for radialSegments and heightSegments that divide the cylinder in circular and vertical segments
-    // openEnded = false to have a closed cylinder ( top and bottom)
+    // default values for radialSegments and heightSegments that divide the cylinder in circular horizontal and vertical segments (they improve the quality of the cylinder)
+    // openEnded = false to have a closed cylinder ( to have the top and bottom part of the cylinder)
     const cornerPocketGeometry = new THREE.CylinderGeometry(CORNER_POCKET_RADIUS, CORNER_POCKET_RADIUS, 0.5, 32, 1, false, 0, Math.PI / 2);
     const sidePocketGeometry = new THREE.CylinderGeometry(SIDE_POCKET_RADIUS, SIDE_POCKET_RADIUS, 0.5, 32, 1, false, 0, Math.PI);
     const pocketMaterial = new THREE.MeshPhongMaterial({ color: 'black', side: THREE.DoubleSide });
@@ -40,7 +40,7 @@ export class Table {
       const pocketGeometry = isSidePocket ? sidePocketGeometry : cornerPocketGeometry;
       const pocket = new THREE.Mesh(pocketGeometry, pocketMaterial.clone()); // clone material to avoid sharing
       pocket.position.set(position[0], position[1], position[2]);
-      // Ruota la buca per orientare la parte aperta verso il tavolo
+      // Rotate pockets to face the center of the table
       if (index === 0) pocket.rotation.y = 0; // back left corner
       else if (index === 1) pocket.rotation.y = -Math.PI / 2; // back right corner
       else if (index === 2) pocket.rotation.y = +Math.PI / 2; // front left corner

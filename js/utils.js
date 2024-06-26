@@ -5,7 +5,7 @@ import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
 import {MTLLoader} from 'three/addons/loaders/MTLLoader.js';
 
 
-//GUI for Helper
+//GUI for Helper Console
 import GUI from 'https://cdn.jsdelivr.net/npm/lil-gui@0.19/+esm';
 const gui = new GUI();
 export { gui };
@@ -67,6 +67,7 @@ function createBall(i, scene, textureFolder) {
   return new Ball(scene, texturePath, i);
 }
 
+//Function used in order to wait for the mesh creation
 function waitForMeshCreation(ball) {
   return new Promise((resolve) => {
     function checkMesh() {
@@ -158,6 +159,7 @@ export function illuminatePocket(game, pockets){
   }
 }
 
+// Function used in order to load the model
 export async function loadModel(url1, url2, scene, position, rotation, scale_factor, manager) {
   const objLoader = new OBJLoader(manager);
   const mtlLoader = new MTLLoader(manager);

@@ -22,6 +22,7 @@ export class Game {
     this.renderer = renderer; 
     this.controls = controls;
 
+    // bind is necessary in order to access the class properties, otherwise 'this' would refer to window or undefined.
     this.enterKeyListener = this.onEnterPress.bind(this); // Bind the enter key listener
 
     // They are used to check if the 8-ball is sunk in the right pocket (side or corner)

@@ -95,7 +95,7 @@ export class SceneGUI {
       folder.add(minMaxGUIHelper, 'max', 0.1, 50, 0.1).name('far').onChange(() => this.updateLight());
   }
 
-  // Helper function to add XYZ controls for a vector.
+  // Helper function to add XYZ controls for a vector (light position)
   makeXYZGUI(folder, vector3, name, onChangeFn) {
       const xyzFolder = folder.addFolder(name);
       xyzFolder.add(vector3, 'x', -10, 10).onChange(onChangeFn);

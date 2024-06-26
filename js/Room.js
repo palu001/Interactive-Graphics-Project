@@ -18,7 +18,10 @@ export class Room {
     // Set texture wrapping and repeat for floor texture
     floorTexture.wrapS = THREE.RepeatWrapping; // Repeat the texture horizontally
     floorTexture.wrapT = THREE.RepeatWrapping; // Repeat the texture vertically
-    floorTexture.repeat.set(2, 2);  //The texture is mapped 4 times
+    // 1 | 1
+    // 1 | 1
+    floorTexture.repeat.set(2, 2);  //The texture is mapped 4 times 
+
 
     // Set texture wrapping and repeat for ceiling texture
     ceilingTexture.wrapS = THREE.RepeatWrapping;
@@ -28,6 +31,7 @@ export class Room {
     // Set texture wrapping and repeat for wall texture
     wallTexture.wrapS = THREE.RepeatWrapping;
     wallTexture.wrapT = THREE.RepeatWrapping;
+    // 1 | 1
     wallTexture.repeat.set(2, 1);  
 
     // Create geometries for floor and walls

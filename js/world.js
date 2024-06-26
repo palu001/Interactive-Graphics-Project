@@ -11,7 +11,7 @@ import { Game } from '../js/Game.js';
 import Stats from 'three/addons/libs/stats.module.js';
 
 
-let stats = new Stats();
+let stats = new Stats(); // To show FPS information
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('black');
 
@@ -23,7 +23,7 @@ const framerate = document.getElementById('framerate');
 framerate.appendChild(stats.dom);
 
 // Define camera properties
-const fov = 75;  // amplitude of the camera
+const fov = 75;  // amplitude of the camera (degrees)
 //It is aspect ratio of near and far planes.
 const aspect = canvas.clientWidth / canvas.clientHeight; // always size of canvas (w/h) ->  no distortion 
 const near = 0.1; // more near objects are not rendered

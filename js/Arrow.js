@@ -35,9 +35,9 @@ export class Arrow {
   // Method to handle mouse click events
   onMouseClick(event) {
     if (this.dragControls) return;
-    // Calculate mouse position in normalized device coordinates
+    // Calculate mouse position in normalized device coordinates (-1 to +1 for both components) -> defined in the class of Raycaster
     this.mouse_click.x = (event.clientX / window.innerWidth) * 2 - 1;
-    this.mouse_click.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    this.mouse_click.y = -(event.clientY / window.innerHeight) * 2 + 1; // (default is up to down, but i want down to up)
 
     // Update the raycaster_click with the camera and mouse position (origin and direction)
     this.raycaster_click.setFromCamera(this.mouse_click, this.camera);
@@ -77,9 +77,9 @@ export class Arrow {
   // Method to handle mouse move events for arrow helper direction and length
   onMouseMove(event) {
     if (this.arrowHelper) {
-      // Calculate mouse position in normalized device coordinates
+      // Calculate mouse position in normalized device coordinates (-1 to +1 for both components)
       this.mouse_arrow.x = (event.clientX / window.innerWidth) * 2 - 1;
-      this.mouse_arrow.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      this.mouse_arrow.y = -(event.clientY / window.innerHeight) * 2 + 1; // change direction (default is up to down, but i want down to up)
 
       // Update the raycaster_arrow with the camera and mouse position
       this.raycaster_arrow.setFromCamera(this.mouse_arrow, this.camera);
