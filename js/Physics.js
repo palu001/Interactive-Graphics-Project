@@ -120,17 +120,7 @@ function detectCollisions(scene, balls, game) {
 export function updatePhysics(deltaTime, scene, balls, game) {
   balls.forEach(ball => {
     if (ball.mesh) { 
-      if (ball.velocity.length() > LIMIT_VELOCITY) {
-        // uniformly decrease the velocity of the ball
-        const at = FRICTION * deltaTime;
-        const vector_at = new THREE.Vector3(at, 0, at);
-        const absolute_velocity = new THREE.Vector3(Math.abs(ball.velocity.x), 0, Math.abs(ball.velocity.z));
-        const new_velocity = absolute_velocity.sub(vector_at);
-        // careful with the sign of the velocity because it shouldn't change direction
-        new_velocity.x = Math.max(0, new_velocity.x) * Math.sign(ball.velocity.x);
-        new_velocity.z = Math.max(0, new_velocity.z) * Math.sign(ball.velocity.z);
-        ball.velocity = new_velocity;
-      }
+      ball.velocity = ball.velocity.divideScalar(FRICTION); // Friction
       if (ball.velocity.length() < LIMIT_VELOCITY){
         ball.velocity.set(0, 0, 0);
       }
