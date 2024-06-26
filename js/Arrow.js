@@ -52,7 +52,7 @@ export class Arrow {
         this.arrowHelper = new THREE.ArrowHelper(
           new THREE.Vector3(1, 0, 0), // Initial direction
           mesh.position, // Initial position
-          1, // Length
+          2, // Length
           0xffff00 // Color
         );
         this.scene.add(this.arrowHelper);
